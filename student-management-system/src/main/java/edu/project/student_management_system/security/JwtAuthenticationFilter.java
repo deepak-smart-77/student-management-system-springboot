@@ -1,9 +1,11 @@
 package edu.project.student_management_system.security;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
@@ -31,7 +33,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		}
 		String token = authHeader.substring(7);
 		String email = jwtutil.extractEmail(token);
-		UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(email, null, null);
+		String role = jwtutil.extractRole(token);
+		List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_" + role));
+		UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(email, null,
+				authorities);
 		authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 		SecurityContextHolder.getContext().setAuthentication(authToken);
 		filterChain.doFilter(request, response);

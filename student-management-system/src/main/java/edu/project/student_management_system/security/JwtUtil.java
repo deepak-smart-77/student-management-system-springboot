@@ -2,6 +2,8 @@ package edu.project.student_management_system.security;
 
 import java.security.Key;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.stereotype.Component;
 
@@ -15,9 +17,13 @@ public class JwtUtil {
 	
 	private static final String SECRET = "mysecretkeymysecretkeymysecretkey12";
 	private static Key key = Keys.hmacShaKeyFor(SECRET.getBytes());
-	public String generateToken(String email) {
+	public String generateToken(String email, String role) {
+		
+		Map<String,Object> claims = new HashMap<>();
+		claims.put("role", role);
 		return Jwts
 				.builder()
+				.setClaims(claims)
 				.setSubject(email)
 				.setIssuedAt(new Date())
 				.setExpiration(new Date(
@@ -33,5 +39,14 @@ public class JwtUtil {
 				.parseClaimsJws(token)
 				.getBody();
 		return claims.getSubject();
+	}
+	public String extractRole(String token) {
+		Claims claims = Jwts
+				.parserBuilder()
+				.setSigningKey(key)
+				.build()
+				.parseClaimsJws(token)
+				.getBody();
+		return claims.get("role", String.class);
 	}
 }

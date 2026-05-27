@@ -30,7 +30,7 @@ public class AuthService {
 		user.setUsername(requestDTO.getUsername());
 		user.setEmail(requestDTO.getEmail());
 		user.setPassword(passwordencoder.encode(requestDTO.getPassword()));
-		
+		user.setRole(requestDTO.getRole());
 		userrepository.save(user);
 		
 		return "User registered successfully";
@@ -45,7 +45,7 @@ public class AuthService {
 		if(!passwordMatches) {
 			return "Invalid email or password";
 		}
-		String token = jwtutil.generateToken(user.getEmail());
+		String token = jwtutil.generateToken(user.getEmail(),user.getRole().name());
 		
 		return token;
 	}

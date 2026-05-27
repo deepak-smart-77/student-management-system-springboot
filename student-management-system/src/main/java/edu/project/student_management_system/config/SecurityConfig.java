@@ -5,12 +5,15 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
+import edu.project.student_management_system.security.JwtAccessDeniedHandler;
+import edu.project.student_management_system.security.JwtAuthenticationEntryPoint;
 import edu.project.student_management_system.security.JwtAuthenticationFilter;
 
 @Configuration
@@ -18,6 +21,12 @@ public class SecurityConfig {
 
 	@Autowired
 	private JwtAuthenticationFilter jwtfilter;
+
+	@Autowired
+	private JwtAuthenticationEntryPoint authenticationEntryPoint;
+
+	@Autowired
+	private JwtAccessDeniedHandler accessDeniedHandler;
 
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -29,7 +38,19 @@ public class SecurityConfig {
 
 						.requestMatchers("/auth/**").permitAll()
 
+						.requestMatchers(HttpMethod.GET, "/students/**").hasAnyRole("USER", "ADMIN")
+
+						.requestMatchers(HttpMethod.POST, "/students/**").hasRole("ADMIN")
+
+						.requestMatchers(HttpMethod.PUT, "/students/**").hasRole("ADMIN")
+
+						.requestMatchers(HttpMethod.DELETE, "/students/**").hasRole("ADMIN")
+
 						.anyRequest().authenticated())
+				
+						.exceptionHandling(exception -> exception
+								.authenticationEntryPoint(authenticationEntryPoint)
+								.accessDeniedHandler(accessDeniedHandler))
 
 				.addFilterBefore(jwtfilter, UsernamePasswordAuthenticationFilter.class);
 
