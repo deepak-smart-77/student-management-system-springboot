@@ -10,6 +10,7 @@ import edu.project.student_management_system.dto.LoginRequestDTO;
 import edu.project.student_management_system.dto.SignupRequestDTO;
 import edu.project.student_management_system.entity.User;
 import edu.project.student_management_system.repository.UserRepository;
+import edu.project.student_management_system.security.JwtUtil;
 
 @Service
 public class AuthService {
@@ -19,6 +20,9 @@ public class AuthService {
 	
 	@Autowired
 	private PasswordEncoder passwordencoder;
+	
+	@Autowired
+	private JwtUtil jwtutil;
 	
 	public String signup(SignupRequestDTO requestDTO) {
 		User user = new User();
@@ -41,6 +45,8 @@ public class AuthService {
 		if(!passwordMatches) {
 			return "Invalid email or password";
 		}
-		return "Login successful";
+		String token = jwtutil.generateToken(user.getEmail());
+		
+		return token;
 	}
 }
