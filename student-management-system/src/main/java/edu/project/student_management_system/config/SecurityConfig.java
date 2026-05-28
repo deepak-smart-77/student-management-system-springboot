@@ -5,7 +5,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -17,6 +17,7 @@ import edu.project.student_management_system.security.JwtAuthenticationEntryPoin
 import edu.project.student_management_system.security.JwtAuthenticationFilter;
 
 @Configuration
+@EnableMethodSecurity
 public class SecurityConfig {
 
 	@Autowired
@@ -37,14 +38,6 @@ public class SecurityConfig {
 				.authorizeHttpRequests(auth -> auth
 
 						.requestMatchers("/auth/**").permitAll()
-
-						.requestMatchers(HttpMethod.GET, "/students/**").hasAnyRole("USER", "ADMIN")
-
-						.requestMatchers(HttpMethod.POST, "/students/**").hasRole("ADMIN")
-
-						.requestMatchers(HttpMethod.PUT, "/students/**").hasRole("ADMIN")
-
-						.requestMatchers(HttpMethod.DELETE, "/students/**").hasRole("ADMIN")
 
 						.anyRequest().authenticated())
 				

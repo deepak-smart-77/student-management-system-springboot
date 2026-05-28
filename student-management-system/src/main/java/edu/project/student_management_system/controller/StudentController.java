@@ -3,6 +3,7 @@ package edu.project.student_management_system.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,7 +25,8 @@ public class StudentController {
 
 	@Autowired
 	StudentService studentservice;
-
+	
+	@PreAuthorize("hasRole('ADMIN')")
 	@PostMapping("/students")
 	public ApiResponse<StudentResponseDTO> addStudent(@Valid @RequestBody StudentRequestDTO requestDTO) {
 
@@ -32,7 +34,8 @@ public class StudentController {
 
 		return new ApiResponse<>(true, "Student Added Successfully", responseDTO);
 	}
-
+	
+	@PreAuthorize("hasAnyRole('USER','ADMIN')")
 	@GetMapping("/students")
 	public ApiResponse<List<StudentResponseDTO>> getAllStudent() {
 
@@ -40,10 +43,8 @@ public class StudentController {
 
 		return new ApiResponse<>(true, "Students fetched Successfully", responseDTO);
 	}
-
-//	public StudentResponseDTO getStudentById(@PathVariable Long id) {
-//		return studentservice.getstudentById(id);
-//	}
+	
+	@PreAuthorize("hasAnyRole('USER','ADMIN')")
 	@GetMapping("/students/{id}")
 	public ApiResponse<StudentResponseDTO> getStudentById(@PathVariable Long id) {
 
@@ -51,7 +52,8 @@ public class StudentController {
 
 		return new ApiResponse<>(true, "Student fetched successfully", responseDTO);
 	}
-
+	
+	@PreAuthorize("hasRole('ADMIN')")
 	@DeleteMapping("/students/{id}")
 	public ApiResponse<String> deleteStudent(@PathVariable Long id) {
 
@@ -59,7 +61,8 @@ public class StudentController {
 
 		return new ApiResponse<>(true, message, null);
 	}
-
+	
+	@PreAuthorize("hasRole('ADMIN')")
 	@PutMapping("/students/{id}")
 	public ApiResponse<StudentResponseDTO> updateStudent(@PathVariable Long id,
 			@Valid @RequestBody StudentRequestDTO requestDTO) {
